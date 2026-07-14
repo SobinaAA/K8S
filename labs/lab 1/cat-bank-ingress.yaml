@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cat-bank-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: cat-bank.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix # Весь трафик идет в КотоБанк
+        backend:
+          service:
+            name: cat-bank-service
+            port:
+              number: 80

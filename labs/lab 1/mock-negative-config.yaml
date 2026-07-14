@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wiremock-config-500
+data:
+
+  advice-ok.json: |
+    {
+      "request": {
+        "method": "GET",
+        "url": "/advice"
+      },
+      "response": {
+        "status": 500,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "errorMessage": "Internal Server Error"
+          }
+        }
+      }
+    }
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wiremock-config-400
+data:
+
+  advice-ok.json: |
+    {
+      "request": {
+        "method": "GET",
+        "url": "/advice"
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "errorMessage": "Не передан параметр совета, уточните ваши пожелания!"
+          }
+        }
+      }
+    }

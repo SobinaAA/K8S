@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cat-bank-config
+data:
+  # 1. HTML-страница нашего Банка Котиков
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <title>КотоБанк — Хранилище Котов</title>
+        <style>
+            body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; text-align: center; padding: 50px; color: #333; }
+            .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; max-width: 500px; }
+            h1 { color: #4a154b; }
+            .fact-box { background: #fff8e1; border-left: 5px solid #ffb300; padding: 15px; margin: 20px 0; border-radius: 4px; text-align: left; font-style: italic; min-height: 40px; }
+            .btn { background: #4a154b; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+            .btn:hover { background: #350f36; }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <a href="https://allwebs.ru/image/catbank.YkRFXo"><img src="https://allwebs.ru/images/2026/07/13/62ed929c01e77e8af596eb00cd857eb3.png" alt="catbank" border="0"></a>
+            <h1>🐱🏦 Мяу-Банк Инкорпорейтед</h1>
+            <p>Добро пожаловать в central хранилище котов!</p>
+            
+            <div id="fact-container" class="fact-box">Загрузка мудрого совета...</div>
+            <button class="btn" onclick="loadCatFact()">Узнать новый совет</button>
+        </div>
+
+        <script>
+            function loadCatFact() {
+                const container = document.getElementById('fact-container');
+                container.innerText = 'Стучусь во внешний открытый API...';
+                
+                // Запрашиваем ровный относительный путь нашего пода
+                fetch('/advice')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Ошибка сервера: ' + response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Разбираем правильный JSON по документации {"slip": {"advice": "..."}}
+                        container.innerText = data.slip.advice; 
+                    })
+                    .catch(error => {
+                        container.innerHTML = `<span style="color:red;">⚠️ Ошибка интеграции: ${error.message}</span>`;
+                    });
+            }
+            window.onload = loadCatFact;
+        </script>
+    </body>
+    </html>
+
+  # 2. Исправленная конфигурация Nginx без опечаток
+  default.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+        }
+
+        location /advice {
+            proxy_pass http://wiremock-service:8080/advice;
+
+        }
+
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cat-bank-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cat-bank
+  template:
+    metadata:
+      labels:
+        app: cat-bank
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: web-content
+          mountPath: /usr/share/nginx/html
+        - name: config-volume
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+      volumes:
+      - name: web-content
+        configMap:
+          name: cat-bank-config
+      - name: config-volume
+        configMap:
+          name: cat-bank-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cat-bank-service
+spec:
+  type: ClusterIP
+  selector:
+    app: cat-bank
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

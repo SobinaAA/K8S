@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cat-bank-config
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <title>КотоБанк — Хранилище Котов</title>
+        <style>
+            body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; text-align: center; padding: 50px; }
+            .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; }
+            h1 { color: #4a154b; }
+            .balance { font-size: 24px; font-weight: bold; color: #2ecc71; margin: 20px 0; }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <a href="https://allwebs.ru/image/catbank.YkRFXo"><img src="https://allwebs.ru/images/2026/07/13/62ed929c01e77e8af596eb00cd857eb3.png" alt="catbank" border="0"></a>
+            <h1>🐱🏦 Мяу-Банк Инкорпорейтед</h1>
+            <div class="balance">На вашем балансе: 42 Мурчащих Котика</div>
+            <p>Статус: Голый Под (Без Сервиса)</p>
+        </div>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cat-bank-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cat-bank
+  template:
+    metadata:
+      labels:
+        app: cat-bank
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: web-content
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: web-content
+        configMap:
+          name: cat-bank-config
