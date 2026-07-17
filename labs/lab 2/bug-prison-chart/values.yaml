@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.27"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+bugInfo:
+  count: "247"
+  dangerous:
+    "Memory Leak Kraken"
+  elusive:
+    "Race Condition Ninja"
+  boss:
+    "Lead QA"
+  version:
+    "1.1"
+  mode:
+    "TEST"
+  securityLevel:
+    "CRITICAL"

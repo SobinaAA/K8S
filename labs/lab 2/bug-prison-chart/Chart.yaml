@@ -1,0 +1,7 @@
+apiVersion: v2
+name: bug-prison
+description: Bug Prison - QA Kubernetes laboratory application
+type: application
+
+version: 1.0.0
+appVersion: "1.0"

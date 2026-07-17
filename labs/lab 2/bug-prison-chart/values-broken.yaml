@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "999.9999"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+bugInfo:
+  count: "126"
+  dangerous:
+    "Infinite Loop black hole"
+  elusive:
+    "Schrödinger's Variable"
+  boss:
+    "Superb QA"
+  version:
+    "1.1"
+  mode:
+    "PROD"
+  securityLevel:
+    "CRITICAL"

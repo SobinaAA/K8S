@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bug-prison-page
+
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta charset="UTF-8">
+
+        <title>Bug Prison</title>
+
+        <style>
+
+        body {
+            font-family: monospace;
+            background: #111;
+            color: #00ff00;
+            padding: 40px;
+        }
+
+        .prison {
+            border: 2px solid #00ff00;
+            padding: 20px;
+            width: 500px;
+        }
+
+        </style>
+
+    </head>
+
+
+    <body>
+
+    <div class="prison">
+
+        <h1>Bug Prison</h1>
+
+
+        <h2>
+        Bugs in custody:
+        {{ .Values.bugInfo.count }}
+        dangerous bugs
+        </h2>
+
+
+        <hr>
+
+
+        <p>
+        Most dangerous bug:
+        <b>{{ .Values.bugInfo.dangerous }}</b>
+        </p>
+
+
+        <p>
+        Most elusive bug:
+        <b>{{ .Values.bugInfo.elusive }}</b>
+        </p>
+
+
+        <hr>
+
+
+        <p>
+        Prison warden:
+        {{ .Values.bugInfo.boss }}
+        </p>
+
+
+        <p>
+        Environment version:
+        {{ .Values.bugInfo.version }}
+        </p>
+
+
+        <p>
+        Mode:
+        {{ .Values.bugInfo.mode }}
+        </p>
+
+
+    </div>
+
+
+    </body>
+
+    </html>
